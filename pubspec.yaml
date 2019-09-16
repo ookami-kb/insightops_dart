@@ -1,7 +1,7 @@
 name: insightops_dart
 description: Unofficial wrapper for using Rapid7 insightOps logs (former LogEntries) with Dart.
 version: 0.0.1
-homepage: https://www.example.com
+homepage: https://github.com/ookami-kb/insightops_dart
 author: Kirill Bubochkin <ookami.kb@gmail.com>
 
 environment:
