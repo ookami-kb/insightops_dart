@@ -1,3 +1,5 @@
+![](https://github.com/ookami-kb/insightops_dart/workflows/Dart%20CI/badge.svg)
+
 Unofficial wrapper for using Rapid7 insightOps logs (former LogEntries) with Dart.
 
 This package is using [logging](https://pub.dev/packages/logging) package to do the actual logging, and implements a handler to post the message to insightOps.
