@@ -14,6 +14,7 @@ A simple usage example:
 
 ```dart
 import 'package:insightops_dart/insightops_dart.dart';
+import 'package:logging/logging.dart';
 
 main() {
   // Create handler and pass the URL from log settings.
