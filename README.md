@@ -14,11 +14,14 @@ A simple usage example:
 import 'package:insightops_dart/insightops_dart.dart';
 
 main() {
-  final handler = InsightOpsLogger('__URL__');
+  // Create handler and pass the URL from log settings.
+  final handler = InsightOpsLogger('__LOG_URL__');
 
+  // Define settings for the logger.
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen(handler);
 
+  // Create logger.
   final logger = Logger('Test logger');
 
   // Log info message

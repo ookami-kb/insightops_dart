@@ -9,6 +9,14 @@ typedef PostHandler = Future Function(dynamic url,
 
 typedef MetaGetter = Map<String, dynamic> Function();
 
+/// Creates logger handler for sending messages to insightOps.
+///
+/// [url] is an insightOps webhook URL defined for your log.
+/// You can optionally pass [getMeta] parameter that will be called
+/// with each request to attach additional information to the message being
+/// sent (it will be added under the "meta" key).
+/// [post] parameter does the real HTTP POST request to a server, and is
+/// intended mainly for testing.
 class InsightOpsLogger {
   InsightOpsLogger(
     this.url, {
@@ -31,6 +39,21 @@ class InsightOpsLogger {
   }
 
   Future<void> _postRecord(LogRecord record) async {
+    await _post(
+      url,
+      headers: {
+        'ContentType': 'application/json',
+      },
+      body: json.encode(_createBody(record)),
+    );
+  }
+
+  void dispose() {
+    _subscription?.cancel();
+    _records.close();
+  }
+
+  Map<String, dynamic> _createBody(LogRecord record) {
     final body = {
       'message': record.message,
       'loggerName': record.loggerName,
@@ -48,18 +71,7 @@ class InsightOpsLogger {
     if (meta?.isNotEmpty == true) {
       body['meta'] = meta;
     }
-    await _post(
-      url,
-      headers: {
-        'ContentType': 'application/json',
-      },
-      body: json.encode(body),
-    );
-  }
-
-  void dispose() {
-    _subscription?.cancel();
-    _records.close();
+    return body;
   }
 }
 

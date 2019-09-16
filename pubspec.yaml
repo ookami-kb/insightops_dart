@@ -1,8 +1,8 @@
 name: insightops_dart
-description: A starting point for Dart libraries or applications.
-# version: 1.0.0
-# homepage: https://www.example.com
-# author: ookami <ookami.kb@gmail.com>
+description: Unofficial wrapper for using Rapid7 insightOps logs (former LogEntries) with Dart.
+version: 0.0.1
+homepage: https://www.example.com
+author: Kirill Bubochkin <ookami.kb@gmail.com>
 
 environment:
   sdk: '>=2.5.0 <3.0.0'
