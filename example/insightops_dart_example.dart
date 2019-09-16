@@ -12,10 +12,10 @@ main() {
   // Create logger.
   final logger = Logger('Test logger');
 
-  // Log info message
+  // Log info message.
   logger.info('test message');
 
-  // Log errors with stacktrace
+  // Log errors with stacktrace.
   try {
     throw Error();
   } catch (e, stackTrace) {
