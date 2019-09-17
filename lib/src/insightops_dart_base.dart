@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
@@ -12,9 +13,11 @@ typedef MetaGetter = Map<String, dynamic> Function();
 /// Creates logger handler for sending messages to insightOps.
 ///
 /// [url] is an insightOps webhook URL defined for your log.
+///
 /// You can optionally pass [getMeta] parameter that will be called
 /// with each request to attach additional information to the message being
 /// sent (it will be added under the "meta" key).
+///
 /// [post] parameter does the real HTTP POST request to a server, and is
 /// intended mainly for testing.
 class InsightOpsLogger {
@@ -24,33 +27,54 @@ class InsightOpsLogger {
     PostHandler post = http.post,
   })  : this._post = post,
         this._getMeta = getMeta {
-    _subscription = _records.stream.listen(_postRecord);
+    _messages = StreamQueue(_records.stream);
+    _process();
   }
 
   final String url;
   final Map<String, dynamic> Function() _getMeta;
   final PostHandler _post;
 
-  final StreamController<LogRecord> _records = StreamController();
-  StreamSubscription _subscription;
+  StreamQueue<String> _messages;
+  final StreamController<String> _records = StreamController();
 
   void call(LogRecord record) {
-    _records.add(record);
+    _records.add(json.encode(_createBody(record)));
   }
 
-  Future<void> _postRecord(LogRecord record) async {
+  Future<void> _process() async {
+    while (await _messages.hasNext) {
+      final record = await _messages.next;
+      while (await _sendMessage(record) == false) {
+        await Future.delayed(Duration(seconds: _currentTimeout));
+        _currentTimeout *= _timeoutMultiplier;
+      }
+      _currentTimeout = _initialTimeout;
+    }
+  }
+
+  Future<bool> _sendMessage(String message) async {
+    try {
+      await _postRecord(message);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<void> _postRecord(String body) async {
     await _post(
       url,
       headers: {
         'ContentType': 'application/json',
       },
-      body: json.encode(_createBody(record)),
+      body: body,
     );
   }
 
   void dispose() {
-    _subscription?.cancel();
-    _records.close();
+    _messages?.cancel();
   }
 
   Map<String, dynamic> _createBody(LogRecord record) {
@@ -73,6 +97,11 @@ class InsightOpsLogger {
     }
     return body;
   }
+
+  int _currentTimeout = _initialTimeout;
 }
 
 Map<String, dynamic> _defaultMeta() => {};
+
+const int _initialTimeout = 2;
+const int _timeoutMultiplier = 2;
