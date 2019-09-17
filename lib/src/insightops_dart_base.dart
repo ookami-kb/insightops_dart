@@ -46,7 +46,7 @@ class InsightOpsLogger {
     while (await _messages.hasNext) {
       final record = await _messages.next;
       while (await _sendMessage(record) == false) {
-        await Future.delayed(Duration(seconds: _currentTimeout));
+        await Future.delayed(_currentTimeout);
         _currentTimeout *= _timeoutMultiplier;
       }
       _currentTimeout = _initialTimeout;
@@ -98,10 +98,10 @@ class InsightOpsLogger {
     return body;
   }
 
-  int _currentTimeout = _initialTimeout;
+  Duration _currentTimeout = _initialTimeout;
 }
 
 Map<String, dynamic> _defaultMeta() => {};
 
-const int _initialTimeout = 2;
+const Duration _initialTimeout = Duration(seconds: 2);
 const int _timeoutMultiplier = 2;
