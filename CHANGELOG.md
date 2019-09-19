@@ -1,3 +1,6 @@
+## 0.0.3
+- :zap: Add max timeout for backoff
+
 ## 0.0.2
 - :zap: Add error catching and exponential backoff
 

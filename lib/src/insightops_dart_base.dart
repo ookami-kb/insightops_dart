@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +48,8 @@ class InsightOpsLogger {
       final record = await _messages.next;
       while (await _sendMessage(record) == false) {
         await Future.delayed(_currentTimeout);
-        _currentTimeout *= _timeoutMultiplier;
+        _currentTimeout =
+            min(_currentTimeout * _timeoutMultiplier, _maxTimeout);
       }
       _currentTimeout = _initialTimeout;
     }
@@ -104,4 +106,5 @@ class InsightOpsLogger {
 Map<String, dynamic> _defaultMeta() => {};
 
 const Duration _initialTimeout = Duration(seconds: 2);
+const Duration _maxTimeout = Duration(minutes: 2);
 const int _timeoutMultiplier = 2;
