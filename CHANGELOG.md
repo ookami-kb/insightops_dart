@@ -1,3 +1,6 @@
+## 0.0.4
+- :bug: Fix timeout increasing
+
 ## 0.0.3
 - :zap: Add max timeout for backoff
 
