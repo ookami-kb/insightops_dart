@@ -39,7 +39,7 @@ void main() {
     Logger.root.onRecord.listen(InsightOpsLogger(
       _url,
       post: testPostHandler,
-      getMeta: () => {'deviceId': 'ID'},
+      getMeta: () async => {'deviceId': 'ID'},
     ));
 
     logger.info('message');

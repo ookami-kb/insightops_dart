@@ -1,3 +1,6 @@
+## 0.0.6
+- :zap: Change MetaGetter to return Future
+
 ## 0.0.5
 - :tv: Update Dart dependency
 

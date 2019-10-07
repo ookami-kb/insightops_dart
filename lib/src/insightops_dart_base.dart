@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 typedef PostHandler = Future Function(dynamic url,
     {Map<String, String> headers, dynamic body});
 
-typedef MetaGetter = Map<String, dynamic> Function();
+typedef MetaGetter = Future<Map<String, dynamic>> Function();
 
 /// Creates logger handler for sending messages to insightOps.
 ///
@@ -32,14 +32,14 @@ class InsightOpsLogger {
   }
 
   final String url;
-  final Map<String, dynamic> Function() _getMeta;
+  final MetaGetter _getMeta;
   final PostHandler _post;
 
   StreamQueue<String> _messages;
   final StreamController<String> _records = StreamController();
 
   void call(LogRecord record) {
-    _records.add(json.encode(_createBody(record)));
+    _createBody(record).then((body) => _records.add(json.encode(body)));
   }
 
   Future<void> _process() async {
@@ -79,7 +79,7 @@ class InsightOpsLogger {
     _messages?.cancel();
   }
 
-  Map<String, dynamic> _createBody(LogRecord record) {
+  Future<Map<String, dynamic>> _createBody(LogRecord record) async {
     final body = {
       'message': record.message,
       'loggerName': record.loggerName,
@@ -93,7 +93,7 @@ class InsightOpsLogger {
     if (record.error != null) {
       body['error'] = record.error.toString();
     }
-    final meta = _getMeta();
+    final meta = await _getMeta();
     if (meta?.isNotEmpty == true) {
       body['meta'] = meta;
     }
@@ -103,7 +103,7 @@ class InsightOpsLogger {
   Duration _currentTimeout = _initialTimeout;
 }
 
-Map<String, dynamic> _defaultMeta() => {};
+Future<Map<String, dynamic>> _defaultMeta() async => {};
 
 const Duration _initialTimeout = Duration(seconds: 2);
 const Duration _maxTimeout = Duration(minutes: 2);
