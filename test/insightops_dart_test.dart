@@ -7,13 +7,13 @@ import 'package:test/test.dart';
 void main() {
   Logger.root.level = Level.ALL;
 
-  final List<dynamic> sentMessages = [];
+  final sentMessages = [];
   final logger = Logger('test');
   final PostHandler testPostHandler =
       (dynamic url, {Map<String, String> headers, dynamic body}) async {
     sentMessages.add(body);
   };
-  final String _url = 'http://example.com';
+  const _url = 'http://example.com';
 
   setUp(() {
     sentMessages.clear();
@@ -35,11 +35,31 @@ void main() {
     expect(json.decode(sentMessages[1])['message'], 'message 2');
   });
 
-  test('posts message with meta info', () async {
+  test('posts message with sync meta info', () async {
     Logger.root.onRecord.listen(InsightOpsLogger(
       _url,
       post: testPostHandler,
-      getMeta: () async => {'deviceId': 'ID'},
+      transformBody: (body) => {
+        'meta': {'deviceId': 'ID'},
+        ...body,
+      },
+    ));
+
+    logger.info('message');
+
+    await Future.delayed(Duration(seconds: 1));
+
+    expect(json.decode(sentMessages.first)['meta']['deviceId'], 'ID');
+  });
+
+  test('posts message with async meta info', () async {
+    Logger.root.onRecord.listen(InsightOpsLogger(
+      _url,
+      post: testPostHandler,
+      transformBody: (body) async => {
+        'meta': {'deviceId': 'ID'},
+        ...body,
+      },
     ));
 
     logger.info('message');
@@ -50,7 +70,7 @@ void main() {
   });
 
   test('retries after timeout on error', () async {
-    int attempt = 0;
+    var attempt = 0;
     final PostHandler testPostHandler =
         (dynamic url, {Map<String, String> headers, dynamic body}) async {
       if (attempt == 0) {

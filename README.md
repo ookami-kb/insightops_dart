@@ -2,11 +2,14 @@
 
 Unofficial wrapper for using Rapid7 insightOps logs (former LogEntries) with Dart.
 
-This package is using [logging](https://pub.dev/packages/logging) package to do the actual logging, and implements a handler to post the message to insightOps.
+This package is using [logging](https://pub.dev/packages/logging) package to do the actual logging, and implements a
+handler to post the message to insightOps.
 
 ## Setting up
 
-Set up a new log by following the [instructions](https://insightops.help.rapid7.com/docs/insightops-webhook#section-create-a-log-to-send-your-data-to), copy a URL that you will use to send your log data to.
+Set up a new log by following
+the [instructions](https://insightops.help.rapid7.com/docs/insightops-webhook#section-create-a-log-to-send-your-data-to)
+, copy a URL that you will use to send your log data to.
 
 ## Usage
 
@@ -37,6 +40,23 @@ main() {
     logger.severe('Test failure', e, stackTrace);
   }
 }
+```
+
+### Update body of the message
+
+You can optionally pass `transformBody` parameter to the constructor. This method will be called with each request with
+the body of the message. You can use it to update the body:
+
+```dart
+
+final handler = InsightOpsLogger(
+  '__LOG_URL__',
+  transformBody: (body) async =>
+  {
+    'meta': {'deviceId': 'ID'},
+    ...body,
+  },
+);
 ```
 
 ## Features and bugs

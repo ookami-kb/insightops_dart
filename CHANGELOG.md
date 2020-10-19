@@ -1,3 +1,6 @@
+## 0.1.0
+- :boom: Breaking change: `getMeta` parameter is removed. Use `transformBody` parameter to update the body of the message.
+
 ## 0.0.6
 - :zap: Change MetaGetter to return Future
 
