@@ -93,11 +93,13 @@ class InsightOpsLogger {
     if (record.error != null) {
       body['error'] = record.error.toString();
     }
+
     final meta = await _getMeta();
-    if (meta?.isNotEmpty == true) {
-      body['meta'] = meta;
-    }
-    return body;
+    assert((meta?.isEmpty ?? true) ||
+        body.keys.toSet().intersection(meta.keys.toSet()).isEmpty);
+    meta?.removeWhere((key, _) => body.containsKey(key));
+
+    return {...body, ...?meta};
   }
 
   Duration _currentTimeout = _initialTimeout;
