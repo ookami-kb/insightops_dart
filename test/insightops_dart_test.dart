@@ -39,7 +39,10 @@ void main() {
     Logger.root.onRecord.listen(InsightOpsLogger(
       _url,
       post: testPostHandler,
-      getMeta: () async => {'deviceId': 'ID'},
+      getMeta: () async => {
+        'meta': {'deviceId': 'ID'},
+        'module': 'flutter'
+      },
     ));
 
     logger.info('message');
@@ -47,6 +50,7 @@ void main() {
     await Future.delayed(Duration(seconds: 1));
 
     expect(json.decode(sentMessages.first)['meta']['deviceId'], 'ID');
+    expect(json.decode(sentMessages.first)['module'], 'flutter');
   });
 
   test('retries after timeout on error', () async {
