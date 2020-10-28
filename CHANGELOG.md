@@ -1,3 +1,6 @@
+## 0.1.0+1
+- :cop: `dispose()` method is now async.
+
 ## 0.1.0
 - :boom: Breaking change: `getMeta` parameter is removed. Use `transformBody` parameter to update the body of the message.
 
