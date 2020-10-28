@@ -11,8 +11,12 @@ typedef PostHandler = Future<dynamic> Function(
   dynamic body,
 });
 
+/// Transforms body of the message.
+///
+/// [body] is original body of the message, formed by the library.
+/// It should return an updated body that will be posted to server.
 typedef BodyTransformer = FutureOr<Map<String, dynamic>> Function(
-    Map<String, dynamic>);
+    Map<String, dynamic> body);
 
 /// Creates logger handler for sending messages to insightOps.
 ///
@@ -35,7 +39,9 @@ class InsightOpsLogger {
     _process();
   }
 
+  /// URL to send log data to. See setup instruction on how to get this URL.
   final String url;
+
   final BodyTransformer _transformBody;
   final PostHandler _post;
 
@@ -43,7 +49,12 @@ class InsightOpsLogger {
   final StreamController<String> _records = StreamController();
 
   void call(LogRecord record) {
-    _createBody(record).then((body) => _records.add(json.encode(body)));
+    _createBody(record).then((body) {
+      if (_records.isClosed) {
+        throw StateError('InsightOpsLogger is also disposed');
+      }
+      _records.add(json.encode(body));
+    });
   }
 
   Future<void> _process() async {
@@ -79,8 +90,12 @@ class InsightOpsLogger {
     );
   }
 
-  void dispose() {
-    _messages?.cancel();
+  /// Call this method when this logger is no longer needed.
+  ///
+  /// It's an error to add log messages after this method is called.
+  Future<void> dispose() async {
+    await _records.close();
+    await _messages?.cancel();
   }
 
   Future<Map<String, dynamic>> _createBody(LogRecord record) async {
