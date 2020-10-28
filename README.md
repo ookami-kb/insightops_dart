@@ -1,15 +1,13 @@
 ![](https://github.com/ookami-kb/insightops_dart/workflows/Dart%20CI/badge.svg)
 
-Unofficial wrapper for using Rapid7 insightOps logs (former LogEntries) with Dart.
+An unofficial wrapper for using Rapid7 insightOps logs (former LogEntries) with Dart.
 
-This package is using [logging](https://pub.dev/packages/logging) package to do the actual logging, and implements a
-handler to post the message to insightOps.
+This package is using [logging] package to do the actual logging, and implements a handler to post the message to
+insightOps.
 
 ## Setting up
 
-Set up a new log by following
-the [instructions](https://insightops.help.rapid7.com/docs/insightops-webhook#section-create-a-log-to-send-your-data-to)
-, copy a URL that you will use to send your log data to.
+Set up a new log by following the [instructions], copy a URL that you will use to send your log data to.
 
 ## Usage
 
@@ -64,3 +62,7 @@ final handler = InsightOpsLogger(
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [tracker]: https://github.com/ookami-kb/insightops_dart/issues
+
+[instructions]: https://insightops.help.rapid7.com/docs/insightops-webhook#section-create-a-log-to-send-your-data-to
+
+[logging]: https://pub.dev/packages/logging

@@ -5,8 +5,11 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
-typedef PostHandler = Future Function(dynamic url,
-    {Map<String, String> headers, dynamic body});
+typedef PostHandler = Future<dynamic> Function(
+  dynamic url, {
+  Map<String, String> headers,
+  dynamic body,
+});
 
 typedef BodyTransformer = FutureOr<Map<String, dynamic>> Function(
     Map<String, dynamic>);
