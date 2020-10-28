@@ -5,34 +5,38 @@ import 'package:async/async.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
-typedef PostHandler = Future Function(dynamic url,
-    {Map<String, String> headers, dynamic body});
+typedef PostHandler = Future<dynamic> Function(
+  dynamic url, {
+  Map<String, String> headers,
+  dynamic body,
+});
 
-typedef MetaGetter = Future<Map<String, dynamic>> Function();
+typedef BodyTransformer = FutureOr<Map<String, dynamic>> Function(
+    Map<String, dynamic>);
 
 /// Creates logger handler for sending messages to insightOps.
 ///
 /// [url] is an insightOps webhook URL defined for your log.
 ///
-/// You can optionally pass [getMeta] parameter that will be called
-/// with each request to attach additional information to the message being
-/// sent (it will be added under the "meta" key).
+/// You can optionally pass [transformBody] parameter that will be called
+/// with each request and can be used to change the body. By default,
+/// it just returns the original structure.
 ///
 /// [post] parameter does the real HTTP POST request to a server, and is
 /// intended mainly for testing.
 class InsightOpsLogger {
   InsightOpsLogger(
     this.url, {
-    MetaGetter getMeta = _defaultMeta,
+    BodyTransformer transformBody = _noTransform,
     PostHandler post = http.post,
-  })  : this._post = post,
-        this._getMeta = getMeta {
+  })  : _post = post,
+        _transformBody = transformBody {
     _messages = StreamQueue(_records.stream);
     _process();
   }
 
   final String url;
-  final MetaGetter _getMeta;
+  final BodyTransformer _transformBody;
   final PostHandler _post;
 
   StreamQueue<String> _messages;
@@ -93,17 +97,14 @@ class InsightOpsLogger {
     if (record.error != null) {
       body['error'] = record.error.toString();
     }
-    final meta = await _getMeta();
-    if (meta?.isNotEmpty == true) {
-      body['meta'] = meta;
-    }
-    return body;
+
+    return _transformBody(body);
   }
 
   Duration _currentTimeout = _initialTimeout;
 }
 
-Future<Map<String, dynamic>> _defaultMeta() async => {};
+Future<Map<String, dynamic>> _noTransform(Map<String, dynamic> v) async => v;
 
 const Duration _initialTimeout = Duration(seconds: 2);
 const Duration _maxTimeout = Duration(minutes: 2);
