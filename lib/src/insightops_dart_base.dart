@@ -61,7 +61,7 @@ class InsightOpsLogger {
     while (await _messages.hasNext) {
       final record = await _messages.next;
       while (await _sendMessage(record) == false) {
-        await Future.delayed(_currentTimeout);
+        await Future<void>.delayed(_currentTimeout);
         if (_currentTimeout * _timeoutMultiplier <= _maxTimeout) {
           _currentTimeout *= _timeoutMultiplier;
         }

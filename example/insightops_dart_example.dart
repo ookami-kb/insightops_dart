@@ -1,7 +1,7 @@
 import 'package:insightops_dart/insightops_dart.dart';
 import 'package:logging/logging.dart';
 
-main() {
+void main() {
   // Create handler and pass the URL from log settings.
   final handler = InsightOpsLogger('__LOG_URL__');
 
@@ -13,6 +13,7 @@ main() {
   final logger = Logger('Test logger');
 
   // Log info message.
+  // ignore: cascade_invocations
   logger.info('test message');
 
   // Log errors with stacktrace.
