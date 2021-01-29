@@ -1,3 +1,6 @@
+## 0.2.0
+- :cop: Migrate to nullsafety
+
 ## 0.1.0+1
 - :cop: `dispose()` method is now async.
 

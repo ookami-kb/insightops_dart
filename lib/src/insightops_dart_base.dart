@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
 typedef PostHandler = Future<dynamic> Function(
-  dynamic url, {
-  Map<String, String> headers,
+  Uri url, {
+  Map<String, String>? headers,
   dynamic body,
 });
 
@@ -40,12 +40,12 @@ class InsightOpsLogger {
   }
 
   /// URL to send log data to. See setup instruction on how to get this URL.
-  final String url;
+  final Uri url;
 
   final BodyTransformer _transformBody;
   final PostHandler _post;
 
-  StreamQueue<String> _messages;
+  late final StreamQueue<String> _messages;
   final StreamController<String> _records = StreamController();
 
   void call(LogRecord record) {
@@ -95,7 +95,7 @@ class InsightOpsLogger {
   /// It's an error to add log messages after this method is called.
   Future<void> dispose() async {
     await _records.close();
-    await _messages?.cancel();
+    await _messages.cancel();
   }
 
   Future<Map<String, dynamic>> _createBody(LogRecord record) async {

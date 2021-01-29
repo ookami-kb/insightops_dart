@@ -3,7 +3,7 @@ import 'package:logging/logging.dart';
 
 void main() {
   // Create handler and pass the URL from log settings.
-  final handler = InsightOpsLogger('__LOG_URL__');
+  final handler = InsightOpsLogger(Uri.parse('__LOG_URL__'));
 
   // Define settings for the logger.
   Logger.root.level = Level.ALL;

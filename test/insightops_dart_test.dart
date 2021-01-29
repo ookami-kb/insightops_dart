@@ -10,10 +10,10 @@ void main() {
   final sentMessages = <dynamic>[];
   final logger = Logger('test');
   final PostHandler testPostHandler =
-      (dynamic url, {Map<String, String> headers, dynamic body}) async {
+      (Uri url, {Map<String, String>? headers, dynamic body}) async {
     sentMessages.add(body);
   };
-  const _url = 'http://example.com';
+  final _url = Uri.parse('http://example.com');
 
   setUp(sentMessages.clear);
 
@@ -67,7 +67,7 @@ void main() {
   test('retries after timeout on error', () async {
     var attempt = 0;
     final PostHandler testPostHandler =
-        (dynamic url, {Map<String, String> headers, dynamic body}) async {
+        (Uri url, {Map<String, String>? headers, dynamic body}) async {
       if (attempt == 0) {
         attempt++;
         throw Error();
